@@ -1,0 +1,51 @@
+# .github/workflows/deploy.yml
+name: Deploy Nuxt 4 to GitHub Pages
+
+# запуск при пуше в main
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Скачиваем репозиторий
+      - uses: actions/checkout@v4
+
+      # 2. Включаем node и corepack
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: corepack enable
+
+      # 3. Устанавливаем зависимости
+      - run: npm install
+
+      # 4. Сборка Nuxt с preset GitHub Pages
+      - name: Build Nuxt
+        run: npx nuxi build --preset github_pages
+
+      # 5. Загружаем артефакт статических файлов
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./.output/public
+
+  deploy:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      # Деплой на Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
