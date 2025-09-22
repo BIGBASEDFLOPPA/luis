@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   typescript: { strict: true },
   app: {
-    baseURL: '/LOIS-sticker/',
+    baseURL: '/luis/',
     head: {
       link: [
         {
@@ -15,6 +15,6 @@ export default defineNuxtConfig({
     }
   },
   nitro: {
-    preset: 'static',
-  }
+    preset: "github_pages"
+  },
 })
